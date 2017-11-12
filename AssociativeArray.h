@@ -6,12 +6,19 @@ template <typename V, typename K>
 class AssociativeArray
 {
     struct Node{
-        V VValues  = V();
-        K KValues  = K();
+        V value    = V();
+        K key      = K();
         bool inUse = false;
+        int size   = 1;
+        Node(K key){
+            value = V();
+            inUse = true;
+            this->key = key;
+            size = 1;
+        }
+        Node(){};
     };
     int siz = 0;
-    V* values;
     int cap = 2;
     V dummy = V();
     
@@ -24,11 +31,11 @@ class AssociativeArray
         }
         for (int i = cap; i < capa; i++){
             temp[i].inUse = false;
-            temp[i].VValues = V();
-            temp[i].KValues = K();
+            temp[i].value = V();
+            temp[i].key = K();
         }
         cap = capa;
-        delete[] NodeArray;
+//        delete[] NodeArray;
         NodeArray = temp;
     };
 public:
@@ -68,61 +75,51 @@ public:
     };
     ~AssociativeArray() { delete[] NodeArray; } //destructor
     int capacity() const { return cap; }
-    V& operator[](const K& index) const {
-        if (index < 0) return dummy;
-        if (index >= cap) return dummy;
-        return NodeArray[index].VValues;
-    };
-    V& operator[](const K& index){
+
+    V& operator[](const K& key){
         //search for match, + hole
         for (int i = 0; i < cap; i++){
-            if (NodeArray[i].inUse&&NodeArray[i].KValues == index){
-                return NodeArray[i].VValues;
+            if (NodeArray[i].inUse&&NodeArray[i].key == key){
+                return NodeArray[i].value;
             }
         }
         for (int i = 0; i < cap; i++){
             if (!NodeArray[i].inUse){
                 //create the node
-                Node data;
-                data.KValues = index;
-                data.inUse   = true;
-                data.VValues = V();
+                Node data(key);
                 NodeArray[i] = data;
                 siz++;
-                return NodeArray[i].VValues;
+                return NodeArray[i].value;
             }
         }
         //if no match and no hole
         capacity(cap * 2);
-        Node data;
-        data.KValues = index;
-        data.inUse   = true;
-        data.VValues = V();
+        Node data(key);
         siz++;
-        return NodeArray[cap].VValues;
+        return NodeArray[cap].value;
     };
     
-    V& operator[](int index){
-        if (index < 0) return dummy;
-        if (index >= cap) capacity(index * 2);
-        return NodeArray[index].VValues;
-    };
     bool containsKey(const K& key)const {
         for (int i = 0; i < cap; i++){
-            if (NodeArray[i].KValues == key && NodeArray[i].inUse){return true;}
+            if (NodeArray[i].key == key && NodeArray[i].inUse){return true;}
         }
         return false;
     };
     void deleteKey(const K& key){
         for (int i = 0; i < cap; i++){
-            if (NodeArray[i].KValues == key){NodeArray[i].inUse = false; siz--;}
+            if (NodeArray[i].key == key){
+                NodeArray[i].inUse = false;
+                siz--;
+            }
         }
     };
     int size()const {return siz;};
     Queue<K> keys(){
         Queue<K> AllStrings;
         for (int i = 0; i < cap; i++){
-            if (NodeArray[i].inUse){AllStrings.push(NodeArray[i].KValues);};
+            if (NodeArray[i].inUse){
+                AllStrings.push(NodeArray[i].key);
+            };
         }
         return AllStrings;
     };
