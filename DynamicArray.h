@@ -57,12 +57,12 @@ DynamicArray<V>& DynamicArray<V>::operator=(const DynamicArray<V>&
 //set capacity
 template <typename V>
 void DynamicArray<V>::capacity(int cap) {
-    V* temp = new V[cap];
-    int limit = min(cap, this->cap);
+    V*  temp   = new V[cap];
+    int limit  = min(cap, this->cap);
     for (int i = 0; i < limit; i++)
-        temp[i] = values[i];
+        temp[i]= values[i];
     for (int i = limit; i < cap; i++)
-        temp[i] = V();
+        temp[i]= V();
     delete[] values;
     values = temp;
     this->cap = cap;
